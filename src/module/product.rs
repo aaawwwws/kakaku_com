@@ -8,7 +8,7 @@ pub struct Product {
 }
 
 impl Product {
-    pub fn new(titles: Vec<String>, values: &Vec<String>, urls: &Vec<String>,) -> Self {
+    pub fn new(titles: Vec<String>, values: &Vec<String>, urls: &Vec<String>) -> Self {
         let mut values_u64: Vec<u64> = vec![];
         for values in values.iter() {
             let mut value_string = values.to_string();
@@ -24,5 +24,14 @@ impl Product {
             _urls: urls.to_vec(),
             _total_value:calc
         };
+    }
+    pub fn get_titles (&self) -> &Vec<String> {
+        &self._titles
+    }
+    pub fn get_values (&self) -> &Vec<u64> {
+        &self._values
+    }
+    pub fn get_urls (&self) -> &Vec<String> {
+        &self._urls
     }
 }
