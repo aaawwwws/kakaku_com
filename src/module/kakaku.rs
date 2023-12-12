@@ -1,11 +1,14 @@
-use anyhow::{anyhow};
-use reqwest::Body;
+use std::str::Bytes;
+
+use anyhow::anyhow;
 use scraper::Html;
 use scraper::Selector;
-use core::iter;
+use encoding_rs::SHIFT_JIS;
+use super::product;
+use super::product::Product;
 pub struct Kakaku {
     _urls: Vec<String>,
-    _bodys:Option<Vec<String>>
+    _bodys:Option<Vec<Vec<u8>>>
 }
 
 impl Kakaku {
@@ -19,23 +22,31 @@ impl Kakaku {
     }
 
     pub async fn scraping(&mut self) -> anyhow::Result<()> {
-        let mut bodys:Vec<String> = vec![];
+        let mut bodys:Vec<Vec<u8>> = vec![];
         for url in self._urls.iter() {
-            let body = reqwest::get(url).await?.text().await?;
-            bodys.push(body)
+            let body = reqwest::get(url).await?.bytes().await?;
+            bodys.push(body.to_vec())
         }
         self._bodys = Some(bodys);
         return Ok(());
     }
 
-    pub fn parser (&self) -> anyhow::Result<()> {
-        let mut veec:Vec<String> = vec![];
+    pub fn body (&self) -> anyhow::Result<Product> {
         let Some(bodys) = &self._bodys else{
             return Err(anyhow!("エラー"));
         };
+        let titles = self.element_text(bodys,"h2")?;
+        let values = self.element_text(bodys,".priceTxt")?;
+        let product = product::Product::new(titles, &values, &self._urls);
+        Ok(product)
+    }
+
+    pub fn element_text (&self, bodys:&Vec<Vec<u8>>, class:&str) ->anyhow::Result<Vec<String>> {
+        let mut element_texts: Vec<String> = vec![];
         for body in bodys.iter(){
-            let document = Html::parse_document(body);
-            let selector_str:String = String::from(".priceTxt");
+            let (body_str, _ ,_) = SHIFT_JIS.decode(body);
+            let document = Html::parse_document(&body_str);
+            let selector_str:String = String::from(class);
             let Ok(selector) = Selector::parse(&selector_str) else {
                 return Err(anyhow!("エラー"));
             };
@@ -43,12 +54,10 @@ impl Kakaku {
                 return Err(anyhow!("エレメントが見つかりません。"));
             };
             let value_str = element.text().next().unwrap();
-            let mut value_string = value_str.to_string();
-            value_string.remove(0);
-            value_string.retain(|c| c != ',');
-            let value_int:u64 = value_string.parse::<u64>().unwrap();
-            println!("{}",&value_int);
+            let value_string = value_str.to_string();
+            element_texts.push(value_string)
         }
-        Ok(())
+        println!("{:?}",element_texts);
+        Ok(element_texts)
     }
 }

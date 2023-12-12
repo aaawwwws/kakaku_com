@@ -1,2 +1,3 @@
 pub mod kakaku;
-use kakaku::Kakaku;
+pub mod calcu;
+pub mod product;
