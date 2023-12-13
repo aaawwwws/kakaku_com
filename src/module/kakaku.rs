@@ -48,16 +48,16 @@ impl Kakaku {
             let document = Html::parse_document(&body_str);
             let selector_str:String = String::from(class);
             let Ok(selector) = Selector::parse(&selector_str) else {
-                return Err(anyhow!("エラー"));
+                return Err(anyhow!("エラー".to_string()));
             };
             let Some(element) = document.select(&selector).next() else {
-                return Err(anyhow!("エレメントが見つかりません。"));
+                let ok = String::from("elementが見つかりません。");
+                return Err(anyhow!(ok));
             };
             let value_str = element.text().next().unwrap();
             let value_string = value_str.to_string();
             element_texts.push(value_string)
         }
-        println!("{:?}",element_texts);
         Ok(element_texts)
     }
 }

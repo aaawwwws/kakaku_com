@@ -13,7 +13,6 @@ impl Calcu {
         for val in vals.iter(){
             total_value += val;
         }
-        println!("{}",total_value);
         return total_value
     }
 }
