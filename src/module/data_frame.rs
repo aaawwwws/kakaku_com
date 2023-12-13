@@ -1,6 +1,5 @@
 use std::fs::File;
 use polars::prelude::NamedFrom;
-use polars::prelude::*;
 use polars::{
     df,
     io::{csv::CsvWriter, SerWriter},
