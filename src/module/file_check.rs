@@ -6,9 +6,6 @@ pub struct FileCheck {
 }
 
 impl FileCheck {
-    pub fn new () -> Self {
-        return Self{};
-    }
     pub fn check () -> anyhow::Result<Vec<String>> {
         let Ok(file) = File::open("url.txt") else {
             let err_msg = String::from("ファイルが見つかりません。");

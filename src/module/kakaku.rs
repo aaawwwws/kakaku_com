@@ -1,5 +1,3 @@
-use std::str::Bytes;
-
 use anyhow::anyhow;
 use scraper::Html;
 use scraper::Selector;
@@ -23,9 +21,20 @@ impl Kakaku {
 
     pub async fn scraping(&mut self) -> anyhow::Result<()> {
         let mut bodys:Vec<Vec<u8>> = vec![];
+        let i:usize = 0;
+        let mut index:Vec<usize> = vec![];
         for url in self._urls.iter() {
-            let body = reqwest::get(url).await?.bytes().await?;
-            bodys.push(body.to_vec())
+            if !url.contains("kakaku.com") {
+                println!("非対応サイトのURLを検出しました。「{}」は無視されます。",url);
+                index.push(i.clone());
+                continue;
+            }else{
+                let body = reqwest::get(url).await?.bytes().await?;
+                bodys.push(body.to_vec())
+            }
+        }
+        for delete in index.iter() {
+            self._urls.remove(*delete);
         }
         self._bodys = Some(bodys);
         return Ok(());

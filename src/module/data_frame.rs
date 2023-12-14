@@ -31,10 +31,6 @@ impl DataFrame {
         return Ok(());
     }
 
-    pub fn df_get (&self) -> &polars::frame::DataFrame {
-        return &self._df;
-    }
-
     pub fn df_view (&self) {
         let value_str = self._df.column("価格").unwrap().sum::<u64>().unwrap().to_string();
         let value_str_len = value_str.len();
