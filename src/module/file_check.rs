@@ -16,7 +16,6 @@ impl FileCheck {
         for s in ite {
             s_v.push(s?);
         }
-        println!("{:?}",s_v);
         return Ok(s_v);
     }
 }

@@ -6,9 +6,10 @@ async fn main() -> anyhow::Result<()> {
     const MAX_LENGTH: usize = 20;
     let urls = file_check::FileCheck::check()?;
     if  MAX_LENGTH <= urls.len() {
-        return Err(anyhow::anyhow!("最大20件までです。"));
+        let length_error = String::from("最大20件までです。");
+        return Err(anyhow::anyhow!(length_error));
     }
-    let mut urls = Kakaku::new(&urls[0..]); //スライス(Vecの参照を渡す).
+    let mut urls = Kakaku::new(urls); //スライス(Vecの参照を渡す).
     urls.scraping().await?;
     let product = urls.body()?;
     let mut df = DataFrame::new(
@@ -17,7 +18,8 @@ async fn main() -> anyhow::Result<()> {
         product.get_urls(),
     );
     df.create_file()?;
-    df.df_view();
+    let env = String::from("255");
+    df.df_view(&env,&env,&env);
     let mut line = String::new();
     let mut loop_end = true;
     println!("終了する場合「end」と打ち込んでください");

@@ -4,6 +4,7 @@ use polars::{
     df,
     io::{csv::CsvWriter, SerWriter},
 };
+use std::env;
 use anyhow::anyhow;
 
 pub struct DataFrame {
@@ -31,7 +32,14 @@ impl DataFrame {
         return Ok(());
     }
 
-    pub fn df_view (&self) {
+    fn env_setting (&self, cols:&str, rows:&str, len:&str) { 
+        env::set_var("POLARS_FMT_MAX_COLS", cols);
+        env::set_var("POLARS_FMT_MAX_ROWS", rows);
+        env::set_var("POLARS_FMT_STR_LEN", len);
+    }
+
+    pub fn df_view (&self, cols:&str, rows:&str, len:&str) {
+        self.env_setting(cols, rows, len);
         let value_str = self._df.column("価格").unwrap().sum::<u64>().unwrap().to_string();
         let value_str_len = value_str.len();
         let last_three = value_str.get(value_str_len - 3 .. value_str_len).unwrap();
